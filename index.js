@@ -5,6 +5,9 @@
     * PAGE_DES: The description of the page
     * LIMIT: The maximum number of characters to generate
     * PORT: The port to run the server on 
+    * TEMP: The temperature of the model
+    * INP_TITLE: The title of the input box
+    * OUT_TITLE: The title of the output box
  */
 
 
@@ -33,11 +36,14 @@ const GenModel = String(process.env.GEN);
 const PageTitle = String(process.env.PAGE_TITLE);
 const PageDescription = String(process.env.PAGE_DES);
 const Limit = Number(process.env.LIMIT);
+const Temperature = Number(process.env.TEMP);
 const genAI = new GoogleGenerativeAI(apiKey);
+const inputTitle = String(process.env.INP_TITLE);
+const outputTitle = String(process.env.OUT_TITLE);
 
 // Serve interface.ejs at the root URL with dynamic title
 app.get('/', (req, res) => {
-    res.render('interface', { title: PageTitle, description: PageDescription, limit: Limit });
+    res.render('interface', { title: PageTitle, description: PageDescription, limit: Limit, inputTitle: inputTitle, outputTitle: outputTitle });
 });
 
 const model = genAI.getGenerativeModel({
@@ -45,7 +51,7 @@ const model = genAI.getGenerativeModel({
 });
 
 const generationConfig = {
-    temperature: 0.7,
+    temperature: Temperature,
     topP: 0.95,
     topK: 64,
     maxOutputTokens: 8192,

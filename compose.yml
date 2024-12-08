@@ -12,4 +12,7 @@ services:
       PAGE_TITLE: ${PAGE_TITLE}
       PAGE_DES: ${PAGE_DES}
       LIMIT: ${LIMIT}
+      TEMP: ${TEMP}
+      INP_TITLE: ${INP_TITLE}
+      OUT_TITLE: ${OUT_TITLE}
 networks: {}
