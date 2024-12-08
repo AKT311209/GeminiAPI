@@ -1,7 +1,7 @@
 version: "1.0"
 services:
   translator:
-    image: akt311209/geminitranslator
+    image: akt311209/geminiapi
     restart: unless-stopped
     ports:
       - 37742:${PORT}
