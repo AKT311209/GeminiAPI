@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>
+    <%= title %>
+  </title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      resize: none;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .output-box {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 10px;
+      background-color: #fff;
+      margin-top: 10px;
+      position: relative;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #008CBA;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .copy-btn:hover {
+      background-color: #007bb5;
+    }
+
+    /* Loading spinner styles */
+    .loader {
+      border: 8px solid #f3f3f3;
+      /* Light grey */
+      border-top: 8px solid #4CAF50;
+      /* Green */
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 2s linear infinite;
+      margin: auto;
+      display: none;
+      /* Hidden by default */
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* If using a separate CSS block or file */
+    #textToTranslate {
+      width: 100%;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>
+    <%= title %>
+  </h1>
+  <p>
+    <%= description %>
+  </p>
+  <h2>Text to translate:</h2>
+  <div style="position: relative; display: block; width: 100%;">
+    <textarea id="textToTranslate" rows="10" placeholder="Enter text here" maxlength="<%= limit %>"
+      style="width: 100%; resize: none;"></textarea>
+    <span id="charCount"
+      style="position: absolute; bottom: 10px; right: 10px; background: rgba(255, 255, 255, 0.8); padding: 2px 5px; border-radius: 3px;">0
+      / <%= limit %></span>
+  </div><br>
+  <button id="translateBtn">Translate</button>
+  <button id="clearButton">Clear</button>
+  <h2>Translated Text:</h2>
+  <div class="output-box">
+    <p id="translatedText"></p>
+    <button class="copy-btn" id="copyBtn">Copy</button>
+  </div>
+  <div class="loader"></div>
+
+  <script>
+    const textarea = document.getElementById('textToTranslate');
+    const charCount = document.getElementById('charCount');
+
+    textarea.addEventListener('input', () => {
+      const currentLength = textarea.value.length;
+      charCount.textContent = `${currentLength} / <%= limit %>`;
+    });
+
+    document.getElementById('translateBtn').addEventListener('click', async () => {
+      // Clear the content inside the result box
+      document.getElementById('translatedText').innerText = '';
+      // Show the loader
+      document.querySelector('.loader').style.display = 'block';
+
+      const text = document.getElementById('textToTranslate').value;
+      const response = await fetch('/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        document.getElementById('translatedText').innerText = data.translatedText;
+      } else {
+        document.getElementById('translatedText').innerText = 'Error translating text.';
+      }
+
+      // Hide the loader after getting the response
+      document.querySelector('.loader').style.display = 'none';
+    });
+
+    document.getElementById('copyBtn').addEventListener('click', () => {
+      const copyBtn = document.getElementById('copyBtn');
+      const translatedText = document.getElementById('translatedText').innerText;
+      navigator.clipboard.writeText(translatedText).then(() => {
+        copyBtn.innerText = 'Copied';
+        setTimeout(() => {
+          copyBtn.innerText = 'Copy';
+        }, 2000); // Change the text back to 'Copy' after 2 seconds
+      }).catch(err => {
+        console.error('Failed to copy text: ', err);
+      });
+    });
+
+    document.getElementById('clearButton').addEventListener('click', () => {
+      document.getElementById('textToTranslate').value = '';
+      charCount.textContent = '0 / <%= limit %>';
+    });
+  </script>
+</body>
+
+</html>
