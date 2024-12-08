@@ -1,0 +1,15 @@
+version: "1.0"
+services:
+  translator:
+    image: akt311209/geminitranslator
+    restart: unless-stopped
+    ports:
+      - 37742:${PORT}
+    environment:
+      PORT: ${PORT}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GEN: ${GEN}
+      PAGE_TITLE: ${PAGE_TITLE}
+      PAGE_DES: ${PAGE_DES}
+      LIMIT: ${LIMIT}
+networks: {}
